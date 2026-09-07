@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalogue — Logiciels, Apps, Jeux & SAV</title>
+<style>
+  :root{
+    --bg: #fbfbfd;
+    --ink: #1d1d1f;
+    --ink-soft: #6e6e73;
+    --blue: #0071e3;
+    --green: #1a7f4f;
+    --line: rgba(0,0,0,0.08);
+    --card: #ffffff;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.47;
+  }
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px;}
+
+  header{
+    position: sticky; top:0; z-index: 50;
+    background: rgba(251,251,253,0.8);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--line);
+  }
+  header .bar{ height: 52px; display:flex; align-items:center; justify-content:space-between; }
+  .brand{ font-size:14px; font-weight:600; letter-spacing:-0.01em; }
+  .fb-link{ font-size:12px; color: var(--blue); }
+
+  .hero{ text-align:center; padding: 88px 22px 56px; }
+  .hero .eyebrow{ font-size:17px; font-weight:600; color: var(--ink-soft); margin-bottom:6px; }
+  .hero h1{ font-size: clamp(38px, 6.5vw, 72px); font-weight:600; letter-spacing:-0.03em; margin:0 0 12px; line-height:1.05; }
+  .hero p{ font-size:19px; color: var(--ink-soft); max-width:560px; margin:0 auto; }
+
+  .section-title{
+    font-size: 22px; font-weight:600; letter-spacing:-0.02em;
+    margin: 0 0 16px; padding-top: 8px;
+  }
+
+  /* Bandeau Nouveautés — scroll horizontal */
+  .new-row{
+    display:flex; gap:16px; overflow-x:auto; padding: 4px 0 28px;
+    scroll-snap-type: x mandatory;
+  }
+  .new-row::-webkit-scrollbar{ display:none; }
+  .new-card{
+    scroll-snap-align: start;
+    flex: 0 0 220px;
+    cursor:pointer;
+  }
+  .new-card .thumb{
+    width:220px; height:220px; border-radius: 20px; overflow:hidden;
+    background: linear-gradient(180deg,#f5f5f7,#ececef);
+    display:flex; align-items:center; justify-content:center; font-size:44px;
+    position:relative;
+  }
+  .new-card .thumb img{ width:100%; height:100%; object-fit:cover; }
+  .new-badge{
+    position:absolute; top:10px; left:10px;
+    background: rgba(0,0,0,0.55); color:#fff;
+    font-size:11px; font-weight:600; padding:3px 9px; border-radius:980px;
+    backdrop-filter: blur(6px);
+  }
+  .new-card h4{ font-size:14px; font-weight:600; margin: 10px 2px 2px; }
+  .new-card .price{ font-size:13px; color: var(--ink-soft); margin: 0 2px; }
+
+  .filters{ display:flex; gap:8px; flex-wrap:wrap; padding: 4px 0 28px; }
+  .filter-btn{
+    padding: 8px 18px; border-radius: 980px; border: 1px solid var(--line);
+    background: var(--card); font-size: 13px; font-weight: 500; color: var(--ink-soft);
+    cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .filter-btn.active{ background: var(--ink); border-color: var(--ink); color: #fff; }
+
+  .grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; padding: 0 0 100px; }
+
+  .card{
+    background: var(--card); border-radius: 22px; overflow: hidden;
+    display:flex; flex-direction:column; box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    cursor: pointer;
+    opacity:0; transform: translateY(10px); animation: rise .5s ease forwards;
+    transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease;
+  }
+  @keyframes rise{ to{ opacity:1; transform: translateY(0); } }
+  .card:hover{ transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+  .card .thumb{
+    aspect-ratio: 1/0.85; background: linear-gradient(180deg,#f5f5f7,#ececef);
+    display:flex; align-items:center; justify-content:center; font-size: 44px; overflow:hidden;
+  }
+  .card .thumb img{ width:100%; height:100%; object-fit:cover; }
+  .card .body{ padding: 18px 20px 22px; display:flex; flex-direction:column; gap:4px; flex:1; }
+  .card .cat{ font-size:12px; font-weight:600; color: var(--blue); display:flex; align-items:center; gap:8px; }
+  .card .cat.sav{ color: var(--green); }
+  .card .mode-tag{ font-size:11px; font-weight:600; padding:2px 8px; border-radius:980px; background: rgba(26,127,79,0.1); color: var(--green); }
+  .card h3{ margin:2px 0 0; font-size:18px; font-weight:600; letter-spacing:-0.01em; }
+  .card .price{ font-size:14px; color: var(--ink-soft); margin-top:2px; }
+  .card .cta{
+    margin-top:14px; display:inline-flex; align-items:center; justify-content:center;
+    padding: 9px 0; border-radius: 980px; background: var(--blue); color:#fff;
+    font-size:13px; font-weight:500; transition: background .2s ease, opacity .2s ease;
+  }
+  .card .cta:hover{ opacity:.85; }
+  .card .cta.sav{ background: var(--green); }
+
+  footer{ border-top: 1px solid var(--line); padding: 28px 22px 48px; text-align:center; color: var(--ink-soft); font-size: 12px; }
+
+  /* Fiche produit — plein écran style App Store */
+  .sheet-overlay{
+    position: fixed; inset:0; background: rgba(0,0,0,0.4);
+    display:none; align-items:flex-end; justify-content:center; z-index: 100;
+  }
+  .sheet-overlay.open{ display:flex; }
+  .sheet{
+    background: var(--bg); width:100%; max-width: 640px; max-height: 92vh;
+    border-radius: 24px 24px 0 0; overflow-y:auto; padding: 20px 24px 40px;
+    animation: slideup .35s cubic-bezier(.2,.8,.2,1);
+  }
+  @media (min-width:700px){
+    .sheet-overlay{ align-items:center; }
+    .sheet{ border-radius:24px; }
+  }
+  @keyframes slideup{ from{ transform: translateY(40px); opacity:0; } to{ transform: translateY(0); opacity:1; } }
+  .sheet-close{
+    display:block; margin-left:auto; width:30px; height:30px; border-radius:50%;
+    border:none; background: var(--line); color: var(--ink-soft); font-size:16px; cursor:pointer;
+  }
+  .sheet-hero{ display:flex; gap:16px; align-items:center; margin: 8px 0 20px; }
+  .sheet-hero .thumb{
+    width:84px; height:84px; border-radius:18px; overflow:hidden; flex-shrink:0;
+    background: linear-gradient(180deg,#f5f5f7,#ececef); display:flex; align-items:center; justify-content:center; font-size:34px;
+  }
+  .sheet-hero .thumb img{ width:100%; height:100%; object-fit:cover; }
+  .sheet-hero h2{ margin:0 0 4px; font-size:22px; font-weight:600; letter-spacing:-0.02em; }
+  .sheet-hero .price{ font-size:15px; color: var(--ink-soft); }
+  .sheet-cta{
+    display:block; text-align:center; padding:12px 0; border-radius:980px;
+    background: var(--blue); color:#fff; font-weight:600; font-size:15px; margin: 4px 0 24px;
+  }
+  .sheet-cta.sav{ background: var(--green); }
+  .preview-label{ font-size:13px; font-weight:600; color: var(--ink-soft); margin: 0 0 10px; }
+  .preview-video{
+    width:100%; border-radius:16px; overflow:hidden; margin-bottom:16px; background:#000;
+    aspect-ratio: 16/9;
+  }
+  .preview-video iframe, .preview-video video{ width:100%; height:100%; border:0; display:block; }
+  .shots{ display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; margin-bottom: 20px; }
+  .shots img{ height:180px; border-radius:14px; flex-shrink:0; }
+  .desc{ font-size:15px; color: var(--ink-soft); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="brand">Ton Nom / Ta Marque</div>
+    <a class="fb-link" href="https://facebook.com/TAPAGE" target="_blank" rel="noopener">Nous contacter sur Facebook ›</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Catalogue</div>
+  <h1>Fait pour Mac.</h1>
+  <p>Logiciels, applications, jeux et service après-vente, réunis au même endroit.</p>
+</section>
+
+<div class="wrap">
+  <div class="section-title">Nouveautés</div>
+  <div class="new-row" id="newRow"></div>
+
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<footer>Catalogue mis à jour régulièrement · Antananarivo, Madagascar</footer>
+
+<div class="sheet-overlay" id="sheetOverlay">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+/*
+  ================================================================
+  ZONE À MODIFIER — c'est la SEULE partie à toucher pour gérer
+  le catalogue. Copie un bloc { ... }, colle-le, change les valeurs.
+  L'ORDRE compte : les 5 premiers produits de la liste (peu importe
+  leur catégorie) apparaissent automatiquement dans "Nouveautés".
+  Pour mettre en avant un produit fraîchement ajouté, place-le
+  tout en haut de la liste.
+  ================================================================
+
+  Champs disponibles pour un produit (logiciel / app / jeu) :
+  {
+    cat: "logiciel" | "app" | "jeu",
+    nom: "Nom du produit",
+    prix: "45 000 Ar",
+    image: "https://... .jpg",         -> image de couverture (carrée de préférence)
+    lien: "https://drive.google.com/...",   -> lien de téléchargement
+    description: "Une ou deux phrases qui présentent le produit.",
+    apercu_video: "https://www.youtube.com/embed/XXXXXXXXXXX",  -> optionnel, vidéo 10s en aperçu
+    captures: ["https://... .jpg", "https://... .jpg"]           -> optionnel, captures d'écran
+  }
+
+  Champs pour le SAV / réclamation / dépannage :
+  {
+    cat: "sav",
+    nom: "Dépannage logiciel",
+    mode: "À distance" | "Sur place" | "À distance ou sur place",
+    image: "https://... .jpg",   -> optionnel
+    lien: "https://m.me/TAPAGE",
+    description: "Explique en une phrase ce service."
+  }
+*/
+const produits = [
+  { cat:"jeu", nom:"Nom du jeu exclusif", prix:"12 000 Ar",
+    image:"", lien:"LIEN_GOOGLE_DRIVE_ICI",
+    description:"Un jeu d'action exclusif MacOS, compatible Apple Silicon et Intel.",
+    apercu_video:"", captures:[] },
+
+  { cat:"logiciel", nom:"Pack Microsoft Office", prix:"45 000 Ar",
+    image:"", lien:"LIEN_GOOGLE_DRIVE_ICI",
+    description:"Word, Excel, PowerPoint — la suite complète, version Mac.",
+    apercu_video:"", captures:[] },
+
+  { cat:"app", nom:"Nom de l'application", prix:"8 000 Ar",
+    image:"", lien:"LIEN_GOOGLE_DRIVE_ICI",
+    description:"Une application utilitaire pratique pour le quotidien.",
+    apercu_video:"", captures:[] },
+
+  { cat:"sav", nom:"Réclamation / Dépannage", mode:"À distance ou sur place",
+    image:"", lien:"https://m.me/TAPAGE",
+    description:"Un souci après achat, ou besoin d'aide à l'installation ? On s'en occupe." },
+];
+
+const noms = { all:"Tout", logiciel:"Logiciels", app:"Applications", jeu:"Jeux", sav:"SAV / Dépannage" };
+const emojiParDefaut = { logiciel:"🖥️", app:"📱", jeu:"🎮", sav:"🛠️" };
+
+/* ---- Nouveautés : les 5 premiers de la liste ---- */
+const newRow = document.getElementById("newRow");
+newRow.innerHTML = produits.slice(0,5).map((p, i) => `
+  <div class="new-card" onclick="ouvrirFiche(${i})">
+    <div class="thumb">
+      <span class="new-badge">Nouveau</span>
+      ${p.image ? `<img src="${p.image}" alt="${p.nom}">` : (emojiParDefaut[p.cat] || "💾")}
+    </div>
+    <h4>${p.nom}</h4>
+    <div class="price">${p.cat === "sav" ? (p.mode || "") : (p.prix || "")}</div>
+  </div>
+`).join("");
+
+/* ---- Filtres + grille ---- */
+const catsPresentes = ["all", ...new Set(produits.map(p => p.cat))];
+const filtersEl = document.getElementById("filters");
+filtersEl.innerHTML = catsPresentes.map((c,i) =>
+  `<button class="filter-btn${i===0?' active':''}" data-filter="${c}">${noms[c] || c}</button>`
+).join("");
+
+const gridEl = document.getElementById("grid");
+function render(filter){
+  gridEl.innerHTML = produits.map((p, i) => ({p,i}))
+    .filter(({p}) => filter === "all" || p.cat === filter)
+    .map(({p,i}) => `
+      <div class="card" onclick="ouvrirFiche(${i})">
+        <div class="thumb">${p.image ? `<img src="${p.image}" alt="${p.nom}">` : (emojiParDefaut[p.cat] || "💾")}</div>
+        <div class="body">
+          <span class="cat ${p.cat==='sav'?'sav':''}">${p.cat === "sav" ? `SAV <span class="mode-tag">${p.mode}</span>` : (noms[p.cat] || p.cat)}</span>
+          <h3>${p.nom}</h3>
+          ${p.cat !== "sav" ? `<span class="price">${p.prix || ""}</span>` : ""}
+        </div>
+      </div>
+  `).join("");
+}
+render("all");
+
+filtersEl.addEventListener("click", (e) => {
+  const btn = e.target.closest(".filter-btn");
+  if(!btn) return;
+  filtersEl.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  render(btn.dataset.filter);
+});
+
+/* ---- Fiche produit (façon App Store) ---- */
+const overlay = document.getElementById("sheetOverlay");
+const sheetEl = document.getElementById("sheet");
+
+function ouvrirFiche(i){
+  const p = produits[i];
+  const estSav = p.cat === "sav";
+  sheetEl.innerHTML = `
+    <button class="sheet-close" onclick="fermerFiche()">✕</button>
+    <div class="sheet-hero">
+      <div class="thumb">${p.image ? `<img src="${p.image}" alt="${p.nom}">` : (emojiParDefaut[p.cat] || "💾")}</div>
+      <div>
+        <h2>${p.nom}</h2>
+        <div class="price">${estSav ? (p.mode || "") : (p.prix || "")}</div>
+      </div>
+    </div>
+    <a class="sheet-cta ${estSav?'sav':''}" href="${p.lien}" target="_blank" rel="noopener">${estSav ? "Contacter" : "Télécharger"}</a>
+    ${p.apercu_video ? `
+      <div class="preview-label">Aperçu</div>
+      <div class="preview-video"><iframe src="${p.apercu_video}" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
+    ` : ""}
+    ${p.captures && p.captures.length ? `
+      <div class="preview-label">Captures d'écran</div>
+      <div class="shots">${p.captures.map(url => `<img src="${url}" alt="">`).join("")}</div>
+    ` : ""}
+    ${p.description ? `<div class="preview-label">Description</div><p class="desc">${p.description}</p>` : ""}
+  `;
+  overlay.classList.add("open");
+}
+function fermerFiche(){ overlay.classList.remove("open"); }
+overlay.addEventListener("click", (e) => { if(e.target === overlay) fermerFiche(); });
+</script>
+
+</body>
+</html>
+
