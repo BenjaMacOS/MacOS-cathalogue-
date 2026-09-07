@@ -1,2 +1,2 @@
 # MacOS-cathalogue-
-Vente d'Application, Logiciel, JEUX exclusifs MacOS 
+Ventes d'Application, Logiciel, JEUX exclusifs MacOS 
